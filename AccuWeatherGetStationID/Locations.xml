@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<locations>
+  <location id="12345q">
+    <name>Boston</name>
+    <state_full>Massachusetts</state_full>
+    <state_abbr>MA</state_abbr>
+    <country_full>United States</country_full>
+    <country_abbr>US</country_abbr>
+    <county_name>Suffolk County</county_name>
+    <latitude>42.30</latitude>
+    <longitude>-70.1</longitude>
+    <elevation>23</elevation>
+    <population>2300400</population>
+    <rank>2</rank>
+    <type>City</type>
+  </location>
+  <location id="234567">
+    <name>Miami</name>
+    <state_full>Florida</state_full>
+    <state_abbr>FL</state_abbr>
+    <country_full>United States</country_full>
+    <country_abbr>US</country_abbr>
+    <county_name>Dade County</county_name>
+    <latitude>30.20</latitude>
+    <longitude>-71.5</longitude>
+    <elevation>18</elevation>
+    <population>1200500</population>
+    <rank>2</rank>
+    <type>City</type>
+  </location>
+  <location id="5123456">
+    <name>Disney World</name>
+    <state_full>Florida</state_full>
+    <state_abbr>FL</state_abbr>
+    <country_full>United States</country_full>
+    <country_abbr>US</country_abbr>
+    <county_name>Orange County</county_name>
+    <latitude>30.70</latitude>
+    <longitude>-72.12</longitude>
+    <elevation>55</elevation>
+    <population></population>
+    <rank>50</rank>
+    <type>POI</type>
+  </location>
+</locations>
