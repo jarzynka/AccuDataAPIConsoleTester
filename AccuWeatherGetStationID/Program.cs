@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using Newtonsoft.Json;
+using AccuWeatherData; // reference to our Data DLL
 
 
 namespace AccuWeatherGetStationID
@@ -39,19 +40,19 @@ namespace AccuWeatherGetStationID
                         QueryLocations(); 
                         break;
                     }
-                    if (keyPress.KeyChar == 'b')
+                    if (keyPress.KeyChar == 'b' || keyPress.KeyChar == 'B')
                     {
                         Console.WriteLine(); Console.WriteLine();
                         QueryCurrentConditions();
                         break;
                     }
-                    if (keyPress.KeyChar == 'c') 
+                    if (keyPress.KeyChar == 'c' || keyPress.KeyChar == 'C') 
                     {
                         Console.WriteLine(); Console.WriteLine();                           
                         QueryHourlyForecastPointData();
                         break;
                     }
-                    if (keyPress.KeyChar == 'd')
+                    if (keyPress.KeyChar == 'd' || keyPress.KeyChar == 'D')
                     {
                         Console.WriteLine(); Console.WriteLine();
                         QueryDaypartForecastPointData();
@@ -179,6 +180,7 @@ namespace AccuWeatherGetStationID
             var myJSON = JsonConvert.DeserializeObject<List<LocationPointCurrentData>>(rawJsonText);
             foreach (var pointData in myJSON)
             {
+                
                 var tempF = pointData.Temperature.Imperial.Value;
                 var tempC = pointData.Temperature.Metric.Value;
                 var windDir = pointData.Wind.Direction.English;
