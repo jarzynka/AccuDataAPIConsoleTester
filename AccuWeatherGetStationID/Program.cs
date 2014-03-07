@@ -155,7 +155,7 @@ namespace AccuWeatherGetStationID
                     if (String.IsNullOrWhiteSpace(location)) Console.Write("Invalid location name, try again!: ");
                 }
                 if (location.ToUpper().Equals("Q")) break;
-                string result = AccuWeatherStationID.SearchIDByCityName(location, "", true);
+                string result = AccuWeatherStationID.GetLocation(location, "", true);
                 Console.WriteLine("RESULT FROM QUERY IS...");
                 DeserializeLocationJSON(result);
             }
@@ -305,7 +305,7 @@ namespace AccuWeatherGetStationID
         
 
         // search location by name; name, state; name, country; zip or postal code
-        public static string SearchIDByCityName(string cityName, string countryCode, bool details)
+        public static string GetLocation(string cityName, string countryCode, bool details)
         {
             // uri should be in format
             // http://api.accuweather.com/locations/v1/US/search?q=Boston&apikey=5d487e4b2da5453a8ca390ab3d3f26fc&details=true
@@ -315,7 +315,8 @@ namespace AccuWeatherGetStationID
             string uri = baseUri + "/" + restSearchPath + "/" + countryCode + "/" + restSearchParam + restSearchVar +
                 cityName + "&" + restApiKeyVar + ACCU_API_KEY + "&" + detailsKey + details;
 
-            result = NetworkAccess.FetchDataTextHttp(uri);
+            IFetchTextData data = new FetchTextDataHttp();
+            result = data.FetchData(uri);
 
             return result;
         }
@@ -331,7 +332,8 @@ namespace AccuWeatherGetStationID
             string uri = baseUri + "/" + restCurrentConditionsPath + "/" + accuWeatherLocationId + ".json?" + restApiKeyVar + ACCU_API_KEY +
                 "&" + detailsKey + true;
 
-            result = NetworkAccess.FetchDataTextHttp(uri);
+            IFetchTextData data = new FetchTextDataHttp();
+            result = data.FetchData(uri);
 
             return result;
         }
@@ -348,7 +350,8 @@ namespace AccuWeatherGetStationID
                 forecastLength + "/" + accuWeatherLocationId + ".json?" + restApiKeyVar + ACCU_API_KEY +
                 "&" + detailsKey + true;
 
-            result = NetworkAccess.FetchDataTextHttp(uri);
+            IFetchTextData data = new FetchTextDataHttp();
+            result = data.FetchData(uri);
 
             return result;
         }
@@ -365,7 +368,8 @@ namespace AccuWeatherGetStationID
                 forecastLength + "/" + accuWeatherLocationId + ".json?" + restApiKeyVar + ACCU_API_KEY +
                 "&" + detailsKey + true;
 
-            result = NetworkAccess.FetchDataTextHttp(uri);
+            IFetchTextData data = new FetchTextDataHttp();
+            result = data.FetchData(uri);
 
             return result;
         }
@@ -383,13 +387,18 @@ namespace AccuWeatherGetStationID
     }
 
     /// <summary>
-    /// This class should be in its own "Network Access" DLL
+    /// This class represents a Fetch over HTTP
     /// </summary>
-    public class NetworkAccess
+    public class FetchTextDataHttp : IFetchTextData
     {
         // using System.Net;
 
-        public static string FetchDataTextHttp(string uri)
+        /// <summary>
+        /// Implements IFetchData interface
+        /// </summary>
+        /// <param name="uri">URI or URL</param>
+        /// <returns>Text returned from fetch</returns>
+        public string FetchData(string uri)
         {
             string fetchData = null;
 
@@ -404,8 +413,17 @@ namespace AccuWeatherGetStationID
             }
 
             return fetchData;
-
         }
+
+    }
+
+    /// <summary>
+    /// Interface that defines one method used to fetch text data
+    /// it can then be implemented via Net Http, Ftp or through disk access, etc.
+    /// </summary>
+    public interface IFetchTextData
+    {
+        string FetchData(string uri);
 
     }
 }
