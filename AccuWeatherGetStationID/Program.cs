@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using Newtonsoft.Json;
-using AccuWeatherData; // reference to our Data DLL
+using AccuWeatherData;
+using System.Xml.Serialization;
+using System.IO; // reference to our Data DLL
 
 
 namespace AccuWeatherGetStationID
@@ -18,7 +20,8 @@ namespace AccuWeatherGetStationID
 
         static void Main(string[] args)
         {
-            
+         
+               
             while (true)
             {
                 Console.WriteLine();
@@ -58,6 +61,18 @@ namespace AccuWeatherGetStationID
                         QueryDaypartForecastPointData();
                         break;
                     }
+                    if (keyPress.KeyChar == '~')
+                    {
+                        LoadLocationList();
+                        break;
+                    }
+
+                    if (keyPress.KeyChar == '`')
+                    {
+                        SaveLocationList();
+                        break;
+                    }
+
                     if (keyPress.KeyChar == 'q' || keyPress.Key == ConsoleKey.Escape)
                     {
                         Environment.Exit(0);
@@ -67,8 +82,6 @@ namespace AccuWeatherGetStationID
                 }
 
             }
-            
-           
             
         }
 
@@ -110,7 +123,7 @@ namespace AccuWeatherGetStationID
                     if (String.IsNullOrWhiteSpace(accuWeatherLocationId)) Console.Write("Invalid ID, try again!: ");
                 }
                 if (accuWeatherLocationId.ToUpper().Equals("Q")) break;  
-                string result = AccuWeatherStationID.GetHourlyForecastData(accuWeatherLocationId, "72hour");
+                string result = AccuWeatherStationID.GetHourlyForecastData(accuWeatherLocationId, 72);
                 Console.WriteLine("WEATHER REPORT FOR {0}...", accuWeatherLocationId);
                 DeserializeHourlyPointForecastDataJSON(result);
             }
@@ -132,7 +145,7 @@ namespace AccuWeatherGetStationID
                     
                 }
                 if (accuWeatherLocationId.ToUpper().Equals("Q")) break;
-                string result = AccuWeatherStationID.GetDaypartForecastData(accuWeatherLocationId, "5day");
+                string result = AccuWeatherStationID.GetDaypartForecastData(accuWeatherLocationId, 5);
                 Console.WriteLine("WEATHER REPORT FOR {0}...", accuWeatherLocationId);
                 DeserializeDaypartPointForecastDataJSON(result);
             }
@@ -269,20 +282,98 @@ namespace AccuWeatherGetStationID
                     float locLatitude = location.GeoPosition.Latitude;
                     double locHeight = location.GeoPosition.Elevation.Imperial.Value;
                     string locVizId = location.LocalizedName;
-                    Console.WriteLine("{0}, {2} is in Country: {1} \n\tAccuWeatherID: {4}\tGeoLocation: {6}°,{5}° Elevation: {7} ft.",
-                                     locName,
-                                     locCountry,
-                                     locRegion,
-                                     locSubRegion,
-                                     locSearchId,
-                                     locLongitude,
-                                     locLatitude,
-                                     locHeight,
-                                     locVizId);
-                    
+                int locRank = location.Rank;
+                string locType = location.Type;
+                var locPop = location.Details.Population;
+                var locLatLon = String.Format("{0},{1} {2}", locLatitude.ToString(), locLongitude.ToString(),locHeight);
+                
+                     
+                    //Console.WriteLine("{0}, {2} is in Country: {1} \n\tAccuWeatherID: {4}\tGeoLocation: {6}°,{5}° Elevation: {7} ft.\n\tCounty={3}\tRank={9]\tType={10}",
+                    //                 locName,
+                    //                 locCountry,
+                    //                 locRegion,
+                    //                 locSubRegion,
+                    //                 locSearchId,
+                    //                 locLongitude,
+                    //                 locLatitude,
+                    //                 locHeight,
+                    //                 locVizId,
+                    //                 locRank.ToString(),
+                    //                 locType);
+                Console.WriteLine("LOCATION\tCOUNTRY\tREGION\tSUBREGION\tRANK\tTYPE\tPOP.");
+                Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}",
+                    locName, locCountry,locRegion,locSubRegion,locRank,locType,locPop,locSearchId,locLatLon);
             }
          
 
+
+        }
+
+        static void LoadLocationList()
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(Preferences.Locations));
+            var locations = new Preferences.Locations();
+            using (StreamReader reader = new StreamReader("Locations.xml"))
+            {
+                locations = (Preferences.Locations)serializer.Deserialize(reader);
+
+            }
+
+            var locationList = locations.location;
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("LOCATION LIST XML LOAD TOOL");
+            Console.WriteLine("===========================");
+            
+            
+            Console.WriteLine("CITY\tREGION\tSUBREGION\tID\tELEVATION");
+            foreach (var location in locationList)
+            {
+                Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}",
+                    location.name, location.region, location.sub_region,location.id,location.elevation);
+
+
+            }
+            Console.WriteLine();
+            return;
+
+        }
+
+        static void SaveLocationList()
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(Preferences.Locations));
+            var locations = new Preferences.Locations();
+            using (StreamReader reader = new StreamReader("Locations.xml"))
+            {
+                locations = (Preferences.Locations)serializer.Deserialize(reader);
+
+            }
+
+            var locationList = locations.location;
+
+            // change some data so it looks like we did something
+            // let's Malonchefy the names! :)
+
+            foreach (var location in locationList)
+            {
+                location.name = "Mal" + location.name;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("LOCATION LIST XML SAVE TOOL");
+            Console.WriteLine("===========================");
+
+            // write list back out to a new XML file
+            
+            // we can reuse the XmlSerializer Object created at the top
+            using (StreamWriter sw = new StreamWriter("Locations2.xml"))
+            {
+                serializer.Serialize(sw, locations);
+            }
+            
+            return;
 
         }
 
@@ -302,18 +393,65 @@ namespace AccuWeatherGetStationID
         private const string restSearchVar = "q=";
         private const string restApiKeyVar = "apikey=";
         private const string detailsKey = "details=";
+
+        private static Preferences.Preferences _preferences;
         
+        // load preferences
+        private static bool LoadPreferences()
+        {
+            
+            // check if Preferences is instantiated.  If not read preferences
+            if (_preferences == null)
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Preferences.Preferences));
+                _preferences = new Preferences.Preferences();
+                try
+                {
+                    using (StreamReader reader = new StreamReader("Preferences.xml"))
+                    {
+                        _preferences = (Preferences.Preferences)serializer.Deserialize(reader);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Read error: {0}",e.Message);
+                    _preferences = null;
+                    return false;
+                }
+
+            }
+
+            return true;
+
+        }
+
 
         // search location by name; name, state; name, country; zip or postal code
         public static string GetLocation(string cityName, string countryCode, bool details)
         {
+            
+            // check if preferences are loaded
+            // if not, load them
+            // if can't load, exit method
+            bool success = LoadPreferences();
+            if (success == false) return null;
+            
             // uri should be in format
             // http://api.accuweather.com/locations/v1/US/search?q=Boston&apikey=5d487e4b2da5453a8ca390ab3d3f26fc&details=true
 
             string result = null;
 
-            string uri = baseUri + "/" + restSearchPath + "/" + countryCode + "/" + restSearchParam + restSearchVar +
-                cityName + "&" + restApiKeyVar + ACCU_API_KEY + "&" + detailsKey + details;
+            string uri = _preferences.domain_uri + "/" +
+                         _preferences.location_request_path + "/" +
+                         _preferences.api_version + "/" +
+                         _preferences.location_search_request_path + "?" +
+                         _preferences.search_query_param + "=" +
+                         cityName + "&" +
+                         _preferences.api_query_param + "=" +
+                         _preferences.api_key + "&" +
+                         _preferences.details_query_param + "=" +
+                         details;
+                
 
             IFetchTextData data = new FetchTextDataHttp();
             result = data.FetchData(uri);
@@ -324,31 +462,83 @@ namespace AccuWeatherGetStationID
         
         public static string GetCurrentConditions(string accuWeatherLocationId)
         {
+
+            // check if preferences are loaded
+            // if not, load them
+            // if can't load, exit method
+            bool success = LoadPreferences();
+            if (success == false) return null;
+            
+            
             //uri should be in format
             // http://api.accuweather.com/currentconditions/v1/348735.json?apikey=5d487e4b2da5453a8ca390ab3d3f26fc&details=true
             // where 348735 is the AccuWeather location ID
 
             string result = null;
-            string uri = baseUri + "/" + restCurrentConditionsPath + "/" + accuWeatherLocationId + ".json?" + restApiKeyVar + ACCU_API_KEY +
-                "&" + detailsKey + true;
+            bool details = true; // should pass this as a parameter
 
+            string uri = _preferences.domain_uri + "/" +
+                         _preferences.current_obs_request_path + "/" +
+                         _preferences.api_version + "/" +
+                         accuWeatherLocationId + ".json" + "?" +
+                         _preferences.api_query_param + "=" +
+                         _preferences.api_key + "&" +
+                         _preferences.details_query_param + "=" +
+                         details;
+            
+            
             IFetchTextData data = new FetchTextDataHttp();
             result = data.FetchData(uri);
 
             return result;
         }
 
-        public static string GetHourlyForecastData(string accuWeatherLocationId, string forecastLength)
+        public static string GetHourlyForecastData(string accuWeatherLocationId, int forecastLength)
         {
+
+            // check if preferences are loaded
+            // if not, load them
+            // if can't load, exit method
+            bool success = LoadPreferences();
+            if (success == false) return null;
+
+            bool details = true; // should move to method param
+            
             //uri should be in format
             // http://api.accuweather.com/forecasts/v1/hourly/120hour/348735.json?apikey=5d487e4b2da5453a8ca390ab3d3f26fc&details=true
             // where 348735 is the AccuWeather location ID,
             // 120hr is the number of hours to forecast (1,12,24,72,120,240)
 
+            int[] validForecastTime = {1,12,24,72,120,240};
+
+            // compare entered forecast length against valid ones. Choose forecast length closest to one entered without going over
+            for (int i=0; i<validForecastTime.Length; i++)
+            {
+                if (forecastLength == validForecastTime[i]) break; // there's a match.
+                if (forecastLength < validForecastTime[i])
+                {
+                    if (i == 0) forecastLength = validForecastTime[0];
+                    if (i > 0) forecastLength = validForecastTime[i - 1]; // pick the value directly below the one entered
+                    break;
+                }
+            }
+
             string result = null;
-            string uri = baseUri + "/" + restForecastPath + "/" + restHourlyForecastPath + "/" +
-                forecastLength + "/" + accuWeatherLocationId + ".json?" + restApiKeyVar + ACCU_API_KEY +
-                "&" + detailsKey + true;
+            string uri = _preferences.domain_uri + "/" +
+                         _preferences.forecast_request_path + "/" +
+                         _preferences.api_version + "/" +
+                         _preferences.hourly_forecast_request_path + "/" +
+                         forecastLength + "hour" + "/" +
+                         accuWeatherLocationId + ".json" + "?" +
+                         _preferences.api_query_param + "=" +
+                         _preferences.api_key + "&" +
+                         _preferences.details_query_param + "=" +
+                         details;
+                
+                
+                //uri = baseUri + "/" + restForecastPath + "/" + restHourlyForecastPath + "/" +
+                //forecastLength + "hour" + "/" + accuWeatherLocationId + ".json?" + restApiKeyVar + ACCU_API_KEY +
+                //"&" + detailsKey + true;
 
             IFetchTextData data = new FetchTextDataHttp();
             result = data.FetchData(uri);
@@ -356,17 +546,49 @@ namespace AccuWeatherGetStationID
             return result;
         }
 
-        public static string GetDaypartForecastData(string accuWeatherLocationId, string forecastLength)
+        public static string GetDaypartForecastData(string accuWeatherLocationId, int forecastLength)
         {
+
+            // check if preferences are loaded
+            // if not, load them
+            // if can't load, exit method
+            bool success = LoadPreferences();
+            if (success == false) return null;
+
+            bool details = true; // should move to method param
+            
             //uri should be in format
             // http://api.accuweather.com/forecasts/v1/daily/1day/348735.json?apikey=5d487e4b2da5453a8ca390ab3d3f26fc&details=true
             // where 348735 is the AccuWeather location ID,
             // 1day is the number of days to forecast (1,5,10,15,25)
 
+            int[] validForecastTime = { 1, 5, 10, 15, 25 };
+
+            // compare entered forecast length against valid ones. Choose forecast length closest to one entered without going over
+            for (int i = 0; i < validForecastTime.Length; i++)
+            {
+                if (forecastLength == validForecastTime[i]) break; // there's a match.
+                if (forecastLength < validForecastTime[i])
+                {
+                    if (i == 0) forecastLength = validForecastTime[0];
+                    if (i > 0) forecastLength = validForecastTime[i - 1]; // pick the value directly below the one entered
+                    break;
+                }
+            }
+
             string result = null;
-            string uri = baseUri + "/" + restForecastPath + "/" + restDaypartForecastPath + "/" +
-                forecastLength + "/" + accuWeatherLocationId + ".json?" + restApiKeyVar + ACCU_API_KEY +
-                "&" + detailsKey + true;
+            string uri = _preferences.domain_uri + "/" +
+                         _preferences.forecast_request_path + "/" +
+                         _preferences.api_version + "/" +
+                         _preferences.daypart_forecast_request_path + "/" +
+                         forecastLength + "day" + "/" +
+                         accuWeatherLocationId + ".json" + "?" +
+                         _preferences.api_query_param + "=" +
+                         _preferences.api_key + "&" +
+                         _preferences.details_query_param + "=" +
+                         details;
+                
+                
 
             IFetchTextData data = new FetchTextDataHttp();
             result = data.FetchData(uri);
@@ -381,8 +603,11 @@ namespace AccuWeatherGetStationID
         public AccuWeatherStationID()
         {
             //this.countryCode = "US";
+            
 
         }
+
+        
 
     }
 

@@ -1,45 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <locations>
-  <location id="12345q">
+  <location id="348735">
     <name>Boston</name>
-    <state_full>Massachusetts</state_full>
-    <state_abbr>MA</state_abbr>
-    <country_full>United States</country_full>
-    <country_abbr>US</country_abbr>
-    <county_name>Suffolk County</county_name>
-    <latitude>42.30</latitude>
-    <longitude>-70.1</longitude>
-    <elevation>23</elevation>
-    <population>2300400</population>
-    <rank>2</rank>
+    <country>United States</country>
+    <country_code>US</country_code>
+    <region>Massachusetts</region>
+    <region_code>MA</region_code>
+    <sub_region>Suffolk County</sub_region>
+    <latitude>42.36</latitude>
+    <longitude>-71.06</longitude>
+    <elevation>96</elevation>
+    <population>609023</population>
+    <rank>31</rank>
     <type>City</type>
   </location>
-  <location id="234567">
+  <location id="347936">
     <name>Miami</name>
-    <state_full>Florida</state_full>
-    <state_abbr>FL</state_abbr>
-    <country_full>United States</country_full>
-    <country_abbr>US</country_abbr>
-    <county_name>Dade County</county_name>
-    <latitude>30.20</latitude>
-    <longitude>-71.5</longitude>
-    <elevation>18</elevation>
-    <population>1200500</population>
-    <rank>2</rank>
+    <country>United States</country>
+    <country_code>US</country_code>
+    <region>Florida</region>
+    <region_code>FL</region_code>
+    <sub_region>Miami-Dade County</sub_region>
+    <latitude>25.77</latitude>
+    <longitude>-80.19</longitude>
+    <elevation>16</elevation>
+    <population>413201</population>
+    <rank>35</rank>
     <type>City</type>
   </location>
-  <location id="5123456">
+  <location id="69031_POI">
     <name>Disney World</name>
-    <state_full>Florida</state_full>
-    <state_abbr>FL</state_abbr>
-    <country_full>United States</country_full>
-    <country_abbr>US</country_abbr>
-    <county_name>Orange County</county_name>
-    <latitude>30.70</latitude>
-    <longitude>-72.12</longitude>
-    <elevation>55</elevation>
+    <country>United States</country>
+    <country_code>US</country_code>
+    <region>Florida</region>
+    <region_code>FL</region_code>
+    <sub_region>Orange County</sub_region>
+    <latitude>28.42</latitude>
+    <longitude>-81.57</longitude>
+    <elevation>77</elevation>
     <population></population>
-    <rank>50</rank>
+    <rank>250</rank>
     <type>POI</type>
+  </location>
+  <location id="347625">
+    <name>Los Angeles</name>
+    <country>United States</country>
+    <country_code>US</country_code>
+    <region>California</region>
+    <region_code>CA</region_code>
+    <sub_region>Los Angeles County</sub_region>
+    <latitude>34.05</latitude>
+    <longitude>-118.24</longitude>
+    <elevation>355</elevation>
+    <population>3833995</population>
+    <rank>15</rank>
+    <type>City</type>
+  </location>
+  <location id="623">
+    <name>Paris</name>
+    <country>France</country>
+    <country_code>FR</country_code>
+    <region>Paris</region>
+    <region_code>PAR</region_code>
+    <sub_region>Paris</sub_region>
+    <latitude>48.86</latitude>
+    <longitude>2.35</longitude>
+    <elevation>107</elevation>
+    <population>2193030</population>
+    <rank>20</rank>
+    <type>City</type>
   </location>
 </locations>
