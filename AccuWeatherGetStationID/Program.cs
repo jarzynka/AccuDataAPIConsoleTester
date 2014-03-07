@@ -243,6 +243,8 @@ namespace AccuWeatherGetStationID
             }
             var myJSON = JsonConvert.DeserializeObject<DaypartRoot>(rawJsonText);
             string headline = myJSON.Headline.Text;
+            Console.WriteLine("Weather Headline: {0}",headline);
+            
             var forecasts = myJSON.DailyForecasts;
             foreach (var pointData in forecasts)
             {
@@ -250,12 +252,12 @@ namespace AccuWeatherGetStationID
                 var maxtempF = pointData.Temperature.Maximum.Value; var tempUnit = pointData.Temperature.Maximum.Unit;
                 var feelsLikeF = pointData.RealFeelTemperature.Maximum.Value; var feelsLikeUnit = pointData.RealFeelTemperature.Maximum.Unit;
                 var iconPhrase = pointData.Day.LongPhrase;
-
+                var formattedDayAndDate = timeStamp.DayOfWeek + ", " + timeStamp.Date.ToShortDateString();
                 //var tempC = pointData.Temperature.Metric.Value;
                 //var chancePrecip = pointData.
 
-                Console.WriteLine("TIME {0}: Weather: {1}  Temp: {2}°{3}  RealFeel: {4}°{5}",
-                    timeStamp, iconPhrase, maxtempF, tempUnit, feelsLikeF, feelsLikeUnit);
+                Console.WriteLine("{0}:\n  Weather: {1}\n  Temp: {2}°{3}  RealFeel: {4}°{5}",
+                    formattedDayAndDate, iconPhrase, maxtempF, tempUnit, feelsLikeF, feelsLikeUnit);
                 //Console.WriteLine("ACCUWEATHER REAL FEEL: {0}°F / {1}°C", feelsLikeF, feelsLikeC);
                 //Console.WriteLine("WIND: {0} at {1} mph", windDir, windSpeed);
 
@@ -381,19 +383,7 @@ namespace AccuWeatherGetStationID
 
     public class AccuWeatherStationID
     {
-        // constants that will eventually go into XML Preferences file
-        private const string ACCU_API_KEY = "5d487e4b2da5453a8ca390ab3d3f26fc";
-        private const string baseUri = "http://api.accuweather.com";
-        private const string restSearchPath = "locations/v1";
-        private const string restCurrentConditionsPath = "currentconditions/v1";
-        private const string restForecastPath = "forecasts/v1";
-        private const string restHourlyForecastPath = "hourly";
-        private const string restDaypartForecastPath = "daily";
-        private const string restSearchParam = "search?";
-        private const string restSearchVar = "q=";
-        private const string restApiKeyVar = "apikey=";
-        private const string detailsKey = "details=";
-
+        
         private static Preferences.Preferences _preferences;
         
         // load preferences
